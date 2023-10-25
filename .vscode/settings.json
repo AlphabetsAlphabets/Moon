@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "bytecode.h": "c"
+    },
+    "C_Cpp.default.compilerPath": "C:\\MinGW\\bin\\gcc.exe",
+    "C_Cpp.default.compileCommands": "builddir\\compile_commands.json"
+}
