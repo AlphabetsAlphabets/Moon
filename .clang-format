@@ -1,0 +1,8 @@
+---
+ColumnLimit:     80
+ConstructorInitializerIndentWidth: 4
+IndentWidth:     4
+ObjCBlockIndentWidth: 4
+TabWidth:        4
+UseTab:          Never
+---
