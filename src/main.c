@@ -9,6 +9,7 @@ static int PROGRAMS = 0;
 enum OpCode {
     SET,
     ADD,
+    MINUS,
 } typedef opcode;
 
 struct Instruction {
@@ -43,11 +44,16 @@ void runVM(const VM *vm) {
 
         if (op_code == 0) { // SET
             vm->stack[stack_pointer] = curInstruction.data;
-        } else if (op_code == 1) {                 // ADD
-            int v1 = vm->stack[stack_pointer - 2]; // the 1st value
-            int v2 = vm->stack[stack_pointer - 1]; // the 2st value
+        } else if (op_code == 1) {               // ADD
+            int v1 = vm->stack[--stack_pointer]; // the 1st value
+            int v2 = vm->stack[--stack_pointer]; // the 2st value
             // Store it at the top of the stack.
             vm->stack[stack_pointer] = v1 + v2;
+        } else if (op_code == 2) {               // MINUS
+            int v1 = vm->stack[--stack_pointer]; // the 1st value
+            int v2 = vm->stack[--stack_pointer]; // the 2st value
+            // Store it at the top of the stack.
+            vm->stack[stack_pointer] = v2 - v1;
         }
 
         stack_pointer++;
@@ -56,14 +62,19 @@ void runVM(const VM *vm) {
 }
 
 int main(int argc, char **argv) {
-    instruction set, add, set2;
+    instruction set, add, set2, minus;
     // 1 + 2
     // The top of the stack should be 3
     set = new_instruction(SET, 1, 1);
     set2 = new_instruction(SET, 2, 1);
     add = new_instruction(ADD, 0, 0);
+    minus = new_instruction(MINUS, 0, 0);
 
-    instruction program[] = {set, set2, add};
+    // 1 2 + 1 + 2 -
+    // 3 1 + 2 -
+    // 4 2 -
+    // 2
+    instruction program[] = {set, set2, add, set, add, set2, minus};
     PROGRAMS = sizeof(program) / sizeof(instruction);
 
     VM *vm = malloc(sizeof(VM));
