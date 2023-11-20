@@ -1,108 +1,90 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static int PROGRAMS = 0;
-
-// You can't store values in C through an enum like Data(int)
-// Next best option is to have a struct that stores the enum
-// you want and a field to store said data.
-enum OpCode {
-    SET,
+enum opcode {
+    PUSH,
     ADD,
-    MINUS,
+    OpConstant,
 } typedef opcode;
 
-struct Instruction {
-    opcode op_code;
-    int data;
-    int is_value;
-} typedef instruction;
+// opcode opcode - The current opcode.
+// int* byte - Contains the number of operands, and how many bytes
+// an operand is.
+struct instruction {
+    opcode opcode;
+    int *operands;
+} typedef inst;
 
-instruction new_instruction(opcode op_code, int data, int is_value) {
-    instruction instruction = {op_code, data, is_value};
+int find_operand_size(opcode opcode) {
+    int byte;
+    switch (opcode) {
+    case PUSH:
+        byte = 1;
+        break;
+    case ADD:
+        byte = 1;
+        break;
+    case OpConstant:
+        byte = 2;
+        break;
+    }
 
+    return byte;
+}
+
+int find_num_operands(opcode opcode) {
+    int length;
+    switch (opcode) {
+    case PUSH:
+        length = 1;
+        break;
+
+    case ADD:
+        length = 2;
+        break;
+    case OpConstant:
+        length = 1;
+        break;
+    }
+
+    return length;
+}
+
+void print_inst(opcode opcode) {
+    char *s;
+    switch (opcode) {
+    case PUSH:
+        s = "PUSH";
+        break;
+    case ADD:
+        s = "ADD";
+        break;
+    case OpConstant:
+        s = "OpConstant";
+        break;
+    }
+
+    int num_operand = find_num_operands(opcode);
+    int operand_size = find_operand_size(opcode);
+    printf("%s: %i bytes x %i\n", s, operand_size, num_operand);
+}
+
+inst *new_inst(opcode opcode) {
+    int num_operands;
+    inst *instruction;
+
+    instruction = (inst *)malloc(sizeof(inst));
+    instruction->opcode = opcode;
+
+    num_operands = find_num_operands(opcode);
+    instruction->operands = (int *)malloc(num_operands * sizeof(int));
     return instruction;
 }
 
-struct VM {
-    // the program counter keeps track of the call stack.
-    int program_counter;
-    // this points to the top of the data stack
-    int stack_pointer;
-    // This is the data stack.
-    int *stack;
-    instruction *call_stack;
-} typedef VM;
-
-void runVM(const VM *vm) {
-    int program_counter = vm->program_counter;
-    int stack_pointer = vm->stack_pointer;
-
-    while (program_counter < PROGRAMS) {
-        instruction curInstruction = vm->call_stack[program_counter];
-        int op_code = curInstruction.op_code;
-
-        if (op_code == 0) { // SET
-            vm->stack[stack_pointer] = curInstruction.data;
-        } else if (op_code == 1) {               // ADD
-            int v1 = vm->stack[--stack_pointer]; // the 1st value
-            int v2 = vm->stack[--stack_pointer]; // the 2st value
-            // Store it at the top of the stack.
-            vm->stack[stack_pointer] = v1 + v2;
-        } else if (op_code == 2) {               // MINUS
-            int v1 = vm->stack[--stack_pointer]; // the 1st value
-            int v2 = vm->stack[--stack_pointer]; // the 2st value
-            // Store it at the top of the stack.
-            vm->stack[stack_pointer] = v2 - v1;
-        }
-
-        stack_pointer++;
-        program_counter++;
-    }
-}
-
-int main(int argc, char **argv) {
-    instruction set, add, set2, minus;
-    // 1 + 2
-    // The top of the stack should be 3
-    set = new_instruction(SET, 1, 1);
-    set2 = new_instruction(SET, 2, 1);
-    add = new_instruction(ADD, 0, 0);
-    minus = new_instruction(MINUS, 0, 0);
-
-    // 1 2 + 1 + 2 -
-    // 3 1 + 2 -
-    // 4 2 -
-    // 2
-    instruction program[] = {set, set2, add, set, add, set2, minus};
-    PROGRAMS = sizeof(program) / sizeof(instruction);
-
-    VM *vm = malloc(sizeof(VM));
-
-    vm->program_counter = 0;
-    vm->stack_pointer = 0;
-
-    int *p;
-    p = (int *)malloc(2 * PROGRAMS);
-    if (!p) {
-        printf("Out of memory.\n");
-        return 1;
-    }
-
-    vm->stack = p;
-
-    instruction *q;
-    q = (instruction *)malloc(PROGRAMS);
-    if (!q) {
-        printf("Out of memory.\n");
-        return 1;
-    }
-
-    vm->call_stack = q;
-    vm->call_stack = program;
-
-    runVM(vm);
-    printf("%i\n", *vm->stack);
+int main(void) {
+    inst *add;
+    add = new_inst(OpConstant);
+    print_inst(add->opcode);
 
     return 0;
 }
