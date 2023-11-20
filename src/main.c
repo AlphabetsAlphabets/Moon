@@ -15,76 +15,46 @@ struct instruction {
     int *operands;
 } typedef inst;
 
-int find_operand_size(opcode opcode) {
+struct instruction_info {
+    char *name;
     int byte;
-    switch (opcode) {
-    case PUSH:
-        byte = 1;
-        break;
-    case ADD:
-        byte = 1;
-        break;
-    case OpConstant:
-        byte = 2;
-        break;
-    }
+    int num_operands;
+} typedef inst_info;
 
-    return byte;
-}
-
-int find_num_operands(opcode opcode) {
-    int length;
-    switch (opcode) {
-    case PUSH:
-        length = 1;
-        break;
-
-    case ADD:
-        length = 2;
-        break;
-    case OpConstant:
-        length = 1;
-        break;
-    }
-
-    return length;
-}
+static inst_info instructions[] = {
+    // Name, byte, length
+    [PUSH] = {"PUSH", 1, 2},
+    [ADD] = {"ADD", 2, 2},
+    [OpConstant] = {"OpConstant", 2, 1},
+};
 
 void print_inst(opcode opcode) {
-    char *s;
-    switch (opcode) {
-    case PUSH:
-        s = "PUSH";
-        break;
-    case ADD:
-        s = "ADD";
-        break;
-    case OpConstant:
-        s = "OpConstant";
-        break;
-    }
-
-    int num_operand = find_num_operands(opcode);
-    int operand_size = find_operand_size(opcode);
-    printf("%s: %i bytes x %i\n", s, operand_size, num_operand);
+    inst_info info = instructions[opcode];
+    printf("%s: %i bytes x %i\n", info.name, info.byte, info.num_operands);
 }
 
 inst *new_inst(opcode opcode) {
-    int num_operands;
     inst *instruction;
 
     instruction = (inst *)malloc(sizeof(inst));
     instruction->opcode = opcode;
 
-    num_operands = find_num_operands(opcode);
-    instruction->operands = (int *)malloc(num_operands * sizeof(int));
+    inst_info info = instructions[opcode];
+    instruction->operands = (int *)malloc(info.num_operands * sizeof(int));
+
     return instruction;
 }
 
 int main(void) {
+    // If OpConstant is the instruction
+    // 1. The opcode is opconstant
+    // 2. The number of operands is 1
+    // 3. The size of the operand is 2 bytes.
+
     inst *add;
-    add = new_inst(OpConstant);
+    add = new_inst(PUSH);
     print_inst(add->opcode);
+    *add->operands = 1;
 
     return 0;
 }
