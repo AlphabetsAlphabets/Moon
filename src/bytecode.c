@@ -1,8 +1,5 @@
 #include "bytecode.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-
 void print_inst(inst *instruction) {
     inst_info info = inst_mapping[instruction->opcode];
     printf("'%s ", info.name);
