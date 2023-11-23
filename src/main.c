@@ -1,4 +1,4 @@
-#include "headers/bytecode.h"
+#include "headers/vm.h"
 
 int main(void) {
     Instruction *instruction;
