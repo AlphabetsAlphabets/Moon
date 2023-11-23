@@ -1,6 +1,14 @@
-#include "bytecode.h"
+#include "headers/bytecode.h"
 
-void print_inst(inst *instruction) {
+inst_info inst_mapping[] = {
+    // Name, byte, length
+    [PUSH] = {"PUSH", 1, 2},
+    [ADD] = {"ADD", 2, 2},
+    [OpConstant] = {"OpConstant", 2, 1},
+};
+
+
+void print_inst(Instruction *instruction) {
     inst_info info = inst_mapping[instruction->opcode];
     printf("'%s ", info.name);
     for (int i = 0; i < info.num_operands; i++) {
@@ -15,10 +23,10 @@ void print_inst(inst *instruction) {
     printf("' - %i bytes x %i operand\n", info.byte, info.num_operands);
 }
 
-inst *new_inst(opcode opcode, int *operands) {
-    inst *instruction;
+Instruction *new_inst(OpCode opcode, int *operands) {
+    Instruction *instruction;
 
-    instruction = (inst *)malloc(sizeof(inst));
+    instruction = (Instruction *)malloc(sizeof(Instruction));
     instruction->opcode = opcode;
 
     inst_info info = inst_mapping[opcode];
