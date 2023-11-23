@@ -18,13 +18,16 @@ typedef struct Instruction {
     int *operands;
 } Instruction;
 
-struct {
+// char* name - The name of the instruction.
+// int byte - The number of bytes the instruction takes. This will limit the size of the operand.
+// int max_operands - The maximum number of operands. The length of the instruction.
+typedef struct InstructionInfo {
     char *name;
     int byte;
-    int num_operands;
-} typedef inst_info;
+    int max_operands;
+} InstructionInfo;
 
-extern inst_info inst_mapping[];
+extern InstructionInfo inst_mapping[];
 
 void print_inst(Instruction *instruction);
 Instruction *new_inst(OpCode opcode, int *operands);
