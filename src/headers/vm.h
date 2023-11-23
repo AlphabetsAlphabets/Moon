@@ -1,7 +1,7 @@
 #ifndef VM_H
 #define VM_H
 
-#include "headers/bytecode.h"
+#include "src/headers/bytecode.h"
 
 static int PROGRAMS = 0;
 
