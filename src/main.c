@@ -1,7 +1,7 @@
-#include "bytecode.h"
+#include "headers/bytecode.h"
 
 int main(void) {
-    inst *instruction;
+    Instruction *instruction;
     int operands[] = {65535};
     instruction = new_inst(OpConstant, operands);
     print_inst(instruction);
