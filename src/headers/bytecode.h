@@ -4,11 +4,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-enum OpCode {
+typedef enum OpCode {
     PUSH,
     ADD,
     OpConstant,
-} typedef OpCode;
+} OpCode;
 
 // opcode opcode - The current opcode.
 // int* byte - Contains the number of operands, and how many bytes
