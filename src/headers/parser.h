@@ -8,17 +8,8 @@ typedef struct Parser {
     int index;
 } Parser;
 
-char peek();
-
-char advance();
-
 void parse(char *source);
 
-void parse_string(char *source);
-
-// To compare two objects. Make it simple have it compare numbers instead.
-int equality(int x, int y);
-
-int binary(int x, int y);
+void print_tokens(TokenType *tokens);
 
 #endif
