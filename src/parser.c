@@ -19,14 +19,12 @@ void slice(const char *src, char *dest, size_t start, size_t end) {
 }
 
 void print_tokens(TokenType *tokens) {
-    printf("'");
     for (int i = 0; tokens[i] != END_OF_FILE; i++) {
         TokenType cur_token = tokens[i];
         char *name = token_names[cur_token].name;
         printf("%s ", name);
     }
 
-    printf("'");
     printf("\n");
 }
 
@@ -40,7 +38,12 @@ void parse(char *source) {
 
     // While loop done here
     while (*SOURCE != '\0' || *SOURCE != '\000') {
-        TokenType cur_token = END_OF_FILE;
+        TokenType cur_token;
+        if (*SOURCE == ' ') {
+            SOURCE++;
+            continue;
+        }
+
         if (isalnum(*SOURCE)) {
             cur_token = NUMBER;
         }
@@ -51,7 +54,6 @@ void parse(char *source) {
                 cur_token = EQUALS_EQUALS;
                 // Since '==' is one token, advance to the next '='
                 SOURCE++;
-                parser->index++;
             } else {
                 // If it's just '='
                 cur_token = EQUALS;
@@ -63,13 +65,13 @@ void parse(char *source) {
         }
 
         // Advance to next
-        // FIXME
-        // The tokens don't actually get saved.
         *(parser->tokens + parser->index) = cur_token;
+        // Only increment the index if something has been added 
+        // to the list of tokens.
         parser->index++;
         SOURCE++;
     }
 
-    *(parser->tokens + 1) = END_OF_FILE;
+    *(parser->tokens + parser->index) = END_OF_FILE;
     print_tokens(parser->tokens);
 }
