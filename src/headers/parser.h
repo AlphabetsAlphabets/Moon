@@ -10,6 +10,14 @@ typedef struct Parser {
 
 void parse(char *source);
 
+void skip_space();
+
+void parse_number();
+
 void print_tokens(TokenType *tokens);
+
+char peek();
+
+void advance();
 
 #endif

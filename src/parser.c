@@ -1,22 +1,23 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "src/headers/parser.h"
 
 static int LENGTH_OF_SRC;
 static char *SOURCE = "";
+static Parser *parser;
 
 TokenName token_names[] = {
     [NUMBER] = {"NUMBER"}, [EQUALS_EQUALS] = {"=="},  [EQUALS] = {"="},
     [SEMI_COLON] = {";"},  [END_OF_FILE] = {"\nEOF"},
 };
 
-// dest should be +1 longer to accomodate for the insertion of the NULL
-// character.
-void slice(const char *src, char *dest, size_t start, size_t end) {
-    strncpy(dest, src + start, end - start);
-}
+// Parsing utilities.
+char peek() { return *(SOURCE + 1); }
+
+void advance() { SOURCE++; }
 
 void print_tokens(TokenType *tokens) {
     for (int i = 0; tokens[i] != END_OF_FILE; i++) {
@@ -28,32 +29,55 @@ void print_tokens(TokenType *tokens) {
     printf("\n");
 }
 
+void parse_number() {
+    while (isalnum(*SOURCE)) {
+        char next = peek();
+        if (isalnum(next)) {
+            advance();
+            continue;
+        }
+
+        *(parser->tokens + parser->index) = NUMBER;
+        parser->index++;
+        advance();
+        break;
+    }
+
+    skip_space();
+}
+
+void skip_space() {
+    while (*SOURCE == ' ' || peek() == ' ') {
+        advance();
+    }
+}
+
 void parse(char *source) {
     SOURCE = source;
     LENGTH_OF_SRC = sizeof(source);
 
-    Parser *parser = malloc(sizeof(Parser));
+    parser = malloc(sizeof(Parser));
     parser->tokens = malloc(sizeof(TokenType) * LENGTH_OF_SRC);
     parser->index = 0;
 
     // While loop done here
     while (*SOURCE != '\0' || *SOURCE != '\000') {
         TokenType cur_token;
-        if (*SOURCE == ' ') {
-            SOURCE++;
-            continue;
-        }
+        char next;
 
-        if (isalnum(*SOURCE)) {
-            cur_token = NUMBER;
+        skip_space();
+
+        next = peek();
+        if (isalnum(next)) {
+            parse_number();
         }
 
         if (*SOURCE == '=') {
-            char next = *(SOURCE + 1);
+            char next = peek();
             if (next == '=') {
                 cur_token = EQUALS_EQUALS;
                 // Since '==' is one token, advance to the next '='
-                SOURCE++;
+                advance();
             } else {
                 // If it's just '='
                 cur_token = EQUALS;
@@ -66,10 +90,10 @@ void parse(char *source) {
 
         // Advance to next
         *(parser->tokens + parser->index) = cur_token;
-        // Only increment the index if something has been added 
+        // Only increment the index if something has been added
         // to the list of tokens.
         parser->index++;
-        SOURCE++;
+        advance();
     }
 
     *(parser->tokens + parser->index) = END_OF_FILE;
