@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-#include "headers/parser.h"
+#include "headers/scanner.h"
 // The compiler needs to traverse the AST
 // That means we need to get the AST first.
 // We get the AST by parsing source code. So that means I need to write a
@@ -11,8 +11,12 @@
 // instructions that reference the constants in said pool
 
 int main(void) {
-    char *source = "123     == 456;";
-    parse(source);
+    char *source = "((,)).*";
+    Scanner *scanner = malloc(sizeof(Scanner));
+    scanner->source = source;
+
+    scan(scanner);
+    print_token(scanner);
 
     return 0;
 }
