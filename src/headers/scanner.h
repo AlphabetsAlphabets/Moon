@@ -8,7 +8,6 @@
 #include "tokens.h"
 
 static int NUM_TOKENS = 0;
-static int NOT_FINISHED = 1;
 
 // Moon's scanner. Turns source code into lexemes
 // then turn those lexemes into tokens
@@ -21,7 +20,7 @@ typedef struct Scanner {
 
 // Scans through source code.
 void scan(Scanner *scanner);
-void identify_token(Scanner *scanner, char ch);
+void identify_token(Scanner *scanner, char *ch);
 
 void print_token(Scanner *scanner);
 

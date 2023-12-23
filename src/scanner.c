@@ -13,16 +13,20 @@ TokenName token_names[] = {
     [RIGHT_PAREN] = {"RIGHT_PAREN"},
     [LEFT_PAREN] = {"LEFT_PAREN"},
     [NEWLINE] = {"NEWLINE"},
+    [END_OF_FILE] = {"END_OF_FILE"},
 };
 
 void print_token(Scanner *scanner) {
     Token token = *scanner->tokens;
-    for (; token.type != END_OF_FILE;) {
+    for (int i = 0; token.type != END_OF_FILE; i++) {
         char *name = token_names[token.type].name;
         // FIXME: The lexeme doesn't match the token.
+        // END_OF_FILE token not displayed correctly.
         char *lexeme = token.lexeme;
-        printf("%s (%s) at line %i\n", name, lexeme, token.line);
-        scanner->tokens++;
+        // NOTE: The fix is *lexeme but this only
+        // works for single character lexeme
+        printf("%s ('%c') at line %i\n", name, *lexeme, token.line);
+        token = scanner->tokens[i];
     }
 
     printf("\n");
@@ -31,29 +35,41 @@ void print_token(Scanner *scanner) {
 void scan(Scanner *scanner) {
     // Initialise the scanner
     int length_of_src = strlen(scanner->source);
-    scanner->tokens = malloc(sizeof(Token) * length_of_src);
+    scanner->tokens = malloc(sizeof(Token) * length_of_src + 1);
+
     int *line = &scanner->line;
+    *line = 1;
+
     int *column = &scanner->column;
+    *column = 0;
+    // NOTE: Maybe try out ch **ch instead.
+    // TODO: Make sure to do null checks for all
+    // mallocs, callocs, etc. if mem == NULL
+    char *ch = malloc(sizeof(char) * 1);
 
-    for (; NOT_FINISHED;) {
-        char ch = *scanner->source;
+    for (; *column < length_of_src; (*column)++) {
+        // This is supposed to be a character
+        // but because the type of ch is char*
+        // it takes the whole thing as a string.
+        *ch = scanner->source[*column];
         identify_token(scanner, ch);
-
-        scanner->source++;
-        (*column)++;
-        NOT_FINISHED = *column < length_of_src;
     }
 
     Token eof_token = {END_OF_FILE, "EOF", "EOF", *line};
-    *(scanner->tokens++) = eof_token;
+    scanner->tokens[NUM_TOKENS + 1] = eof_token;
 }
 
-void identify_token(Scanner *scanner, char ch) {
+// FIXME:
+// `char *ch` is a string and not a character. So the
+// entire source is passed in, not the specific character.
+// So the lexeme would be the entire source.
+// That is until the iterator moves forward and omits the previous
+// character until the string is finished.
+void identify_token(Scanner *scanner, char *ch) {
     TokenType token_type;
-    // NOTE:
-    // When adding new cases make sure to update
-    // TokenName token_names[]
-    switch (ch) {
+    // NOTE: When updating the switch case
+    // update TokenName token_names[] as well.
+    switch (*ch) {
     case '(':
         token_type = LEFT_PAREN;
         break;
@@ -94,11 +110,7 @@ void identify_token(Scanner *scanner, char ch) {
         return;
     }
 
-    // NOTE: The 2nd last two arguments will need fixing.
-    // - The 2nd last might be wrong. Since it is a void pointer.
-    // To use it might need to do a (char *) on it later.
-    // - The last arg just need a way to get that information properly.
-    Token token = {token_type, &ch, &ch, scanner->line};
-    *(scanner->tokens + NUM_TOKENS) = token;
+    Token token = {token_type, ch, ch, scanner->line};
+    scanner->tokens[NUM_TOKENS] = token;
     NUM_TOKENS++;
 }

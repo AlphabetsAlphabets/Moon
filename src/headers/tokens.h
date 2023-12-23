@@ -33,8 +33,8 @@ typedef struct Token {
     TokenType type;
     // The character that represents the TokenType
     char *lexeme;
-    // The value of the token (this is what will be evaluated)
-    // NOTE: To convert I must do: *(type *)token.literal
+    // The value to be evaluated.
+    // To convert with *(type *)token.literal
     void *literal;
     int line;
 } Token;
