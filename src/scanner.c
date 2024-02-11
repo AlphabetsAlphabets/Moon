@@ -13,7 +13,7 @@ TokenName token_names[] = {
     [RIGHT_PAREN] = {"RIGHT_PAREN"},
     [LEFT_PAREN] = {"LEFT_PAREN"},
     [NEWLINE] = {"NEWLINE"},
-    [END_OF_FILE] = {"END_OF_FILE"},
+    [END_OF_FILE] = {"<<END>>"},
 };
 
 void print_token(Scanner *scanner) {
