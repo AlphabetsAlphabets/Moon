@@ -21,12 +21,7 @@ void print_token(Scanner *scanner) {
     for (int i = 0; token.type != END_OF_FILE; i++) {
         token = scanner->tokens[i];
         char *name = token_names[token.type].name;
-        // FIXME: The lexeme doesn't match the token.
-        // END_OF_FILE token not displayed correctly.
-        char *lexeme = token.lexeme;
-        // NOTE: The fix is *lexeme but this only
-        // works for single character lexeme
-        printf("%s ('%c') at line %i\n", name, *lexeme, token.line);
+        printf("%s ('%s') at line %i\n", name, token.lexeme, token.line);
     }
 }
 
@@ -46,23 +41,14 @@ void scan(Scanner *scanner) {
 
     for (; *column < length_of_src; (*column)++) {
         char *ch = malloc(sizeof(char));
-        // This is supposed to be a character
-        // but because the type of ch is char*
-        // it takes the whole thing as a string.
         *ch = scanner->source[*column];
         identify_token(scanner, ch);
     }
 
-    Token eof_token = {END_OF_FILE, "EOF", "EOF", *line};
+    Token eof_token = {END_OF_FILE, "<<END>>", "<<END>>", *line};
     scanner->tokens[NUM_TOKENS++] = eof_token;
 }
 
-// FIXME:
-// `char *ch` is a string and not a character. So the
-// entire source is passed in, not the specific character.
-// So the lexeme would be the entire source.
-// That is until the iterator moves forward and omits the previous
-// character until the string is finished.
 void identify_token(Scanner *scanner, char *ch) {
     TokenType token_type;
     // NOTE: When updating the switch case
