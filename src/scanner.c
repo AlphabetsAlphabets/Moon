@@ -21,11 +21,7 @@ void print_token(Scanner *scanner) {
     for (int i = 0; token.type != END_OF_FILE; i++) {
         token = scanner->tokens[i];
         char *name = token_names[token.type].name;
-        // FIXME: The lexeme doesn't match the token.
-        // END_OF_FILE token not displayed correctly.
         char *lexeme = token.lexeme;
-        // NOTE: The fix is *lexeme but this only
-        // works for single character lexeme
         printf("%s ('%c') at line %i\n", name, *lexeme, token.line);
     }
 }
@@ -104,7 +100,8 @@ void identify_token(Scanner *scanner, char *ch) {
         break;
     default:
         // TODO: Implement error handling.
-        printf("Unexpected token.\n");
+        printf("Unexpected token: '%s' at line %i.\n", ch, scanner->line);
+        scanner->has_error = 1;
         return;
     }
 

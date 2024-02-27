@@ -16,6 +16,7 @@ typedef struct Scanner {
     Token *tokens;
     int line;
     int column;
+    int has_error;
 } Scanner;
 
 // Scans through source code.

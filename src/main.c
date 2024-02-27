@@ -11,12 +11,15 @@
 // instructions that reference the constants in said pool
 
 int main(void) {
-    char *source = "((,)).*";
+    char *source = "hello\nbye";
     Scanner *scanner = malloc(sizeof(Scanner));
     scanner->source = source;
+    scanner->has_error = 0;
 
     scan(scanner);
-    print_token(scanner);
+    if (!scanner->has_error) {
+        print_token(scanner);
+    }
 
     return 0;
 }
