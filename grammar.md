@@ -1,13 +1,6 @@
-```
-EXPR -> LITERAL | UNARY | BINARY | GROUPING
-
-LITERAL -> number | string | "TRUE" | "FALSE"
-
-UNARY -> ("!" | "-") EXPR
-
-BINARY -> EXPR OP EXPR
-OP -> "+" | "-" | "*" | "/" | "%" |
-      "==" | "!=" | "<" | ">" | ">=" | "<="
-
-GROUPING -> "(" EXPR ")"
-```
+Expr -> Literal | Unary | Binary | Grouping
+Literal -> True | False | Number | String
+Unary -> ("!" | "-") Expr
+Op -> "+" | "-" | "*" | "/" | "%" | "==" | "!=" | "<" | ">" | ">=" | "<="
+Binary -> Expr Op Expr
+Grouping -> "(" Expr ")"
