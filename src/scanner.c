@@ -13,6 +13,7 @@ TokenName token_names[] = {
     [RIGHT_PAREN] = {"RIGHT_PAREN"},
     [LEFT_PAREN] = {"LEFT_PAREN"},
     [NEWLINE] = {"NEWLINE"},
+    [MODULUS] = {"MODULUS"},
     [END_OF_FILE] = {"<<END>>"},
 };
 
@@ -47,6 +48,14 @@ void scan(Scanner *scanner) {
 
     Token eof_token = {END_OF_FILE, "<<END>>", "<<END>>", *line};
     scanner->tokens[NUM_TOKENS++] = eof_token;
+}
+
+char advance(Scanner *scanner) { return *(scanner->source++); }
+
+char peak(Scanner *scanner) {
+    char next = *(scanner->source++);
+    scanner->source--;
+    return next;
 }
 
 void identify_token(Scanner *scanner, char *ch) {
@@ -84,13 +93,58 @@ void identify_token(Scanner *scanner, char *ch) {
     case '*':
         token_type = STAR;
         break;
+    case '=':
+        switch (peak(scanner)) {
+        case '=':
+            token_type = EQUALS_EQUALS;
+            advance(scanner);
+            break;
+        default:
+            token_type = EQUALS;
+        }
+    case '!':
+        switch (peak(scanner)) {
+        case '=':
+            token_type = BANG_EQUALS;
+            advance(scanner);
+            break;
+        default:
+            token_type = BANG;
+        }
+    case '>':
+        switch (peak(scanner)) {
+        case '=':
+            token_type = BANG_EQUALS;
+            advance(scanner);
+            break;
+        default:
+            printf("Unexpected token: '%s' at %i:%i. Did you mean '>='?\n", ch,
+                   scanner->line, scanner->column + 1);
+            scanner->has_error = 1;
+            return;
+        }
+    case '<':
+        switch (peak(scanner)) {
+        case '=':
+            token_type = LESS_EQUALS;
+            advance(scanner);
+            break;
+        default:
+            printf("Unexpected token: '%s' at %i:%i. Did you mean '<='?\n", ch,
+                   scanner->line, scanner->column + 1);
+            scanner->has_error = 1;
+            return;
+        }
     case '\n':
         token_type = NEWLINE;
         scanner->line++;
         break;
+    case '%':
+        token_type = MODULUS;
+        break;
     default:
-        // TODO: Implement error handling.
-        printf("Unexpected token: '%s' at line %i.\n", ch, scanner->line);
+        printf("Unexpected token: '%s' at %i:%i.\n", ch, scanner->line,
+               scanner->column + 1);
         scanner->has_error = 1;
         return;
     }

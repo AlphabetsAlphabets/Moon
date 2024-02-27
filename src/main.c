@@ -11,7 +11,7 @@
 // instructions that reference the constants in said pool
 
 int main(void) {
-    char *source = "hello\nbye";
+    char *source = "><";
     Scanner *scanner = malloc(sizeof(Scanner));
     scanner->source = source;
     scanner->has_error = 0;

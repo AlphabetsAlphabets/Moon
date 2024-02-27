@@ -23,6 +23,9 @@ typedef struct Scanner {
 void scan(Scanner *scanner);
 void identify_token(Scanner *scanner, char *ch);
 
+char advance(Scanner *scanner);
+char peak(Scanner *scanner);
+
 void print_token(Scanner *scanner);
 
 #endif

@@ -2,6 +2,15 @@
 #define TOKENS_H
 
 typedef enum TokenType {
+    //////////////
+    // Not done //
+    //////////////
+    NUMBER,
+    STRING,
+
+    //////////
+    // Done //
+    //////////
     LEFT_PAREN,
     RIGHT_PAREN,
     LEFT_BRACE,
@@ -13,10 +22,7 @@ typedef enum TokenType {
     SEMICOLON,
     STAR,
     NEWLINE,
-
-    NUMBER,
-    STRING,
-    SEMI_COLON,
+    MODULUS,
     END_OF_FILE,
 
     // Equality
