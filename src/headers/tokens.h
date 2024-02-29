@@ -19,11 +19,13 @@ typedef enum TokenType {
     DOT,
     MINUS,
     PLUS,
+    DIVIDE,
     SEMICOLON,
     STAR,
     NEWLINE,
     MODULUS,
     END_OF_FILE,
+    COMMENT,
 
     // Equality
     BANG,

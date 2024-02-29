@@ -5,6 +5,7 @@ TokenName token_names[] = {
     [STAR] = {"STAR"},
     [SEMICOLON] = {"SEMICOLON"},
     [PLUS] = {"PLUS"},
+    [DIVIDE] = {"DIVIDE"},
     [MINUS] = {"MINUS"},
     [DOT] = {"DOT"},
     [COMMA] = {"COMMA"},
@@ -14,7 +15,12 @@ TokenName token_names[] = {
     [LEFT_PAREN] = {"LEFT_PAREN"},
     [NEWLINE] = {"NEWLINE"},
     [MODULUS] = {"MODULUS"},
+    [GREATER_EQUALS] = {"GREATER_EQUALS"},
+    [BANG_EQUALS] = {"BANG_EQUALS"},
+    [LESS_EQUALS] = {"LESS_EQUALS"},
+    [EQUALS_EQUALS] = {"EQUALS_EQUALS"},
     [END_OF_FILE] = {"<<END>>"},
+    [COMMENT] = {"COMMENT"},
 };
 
 void print_token(Scanner *scanner) {
@@ -50,11 +56,10 @@ void scan(Scanner *scanner) {
     scanner->tokens[NUM_TOKENS++] = eof_token;
 }
 
-char advance(Scanner *scanner) { return *(scanner->source++); }
+char advance(Scanner *scanner) { return scanner->source[scanner->column++]; }
 
 char peak(Scanner *scanner) {
-    char next = *(scanner->source++);
-    scanner->source--;
+    char next = scanner->source[scanner->column + 1];
     return next;
 }
 
@@ -62,6 +67,7 @@ void identify_token(Scanner *scanner, char *ch) {
     TokenType token_type;
     // NOTE: When updating the switch case
     // update TokenName token_names[] as well.
+    char *lexeme = ch;
     switch (*ch) {
     case ' ':
     case '\r':
@@ -101,12 +107,14 @@ void identify_token(Scanner *scanner, char *ch) {
         token_type = EQUALS;
         if (peak(scanner) == '=') {
             token_type = EQUALS_EQUALS;
+            lexeme = "==";
             advance(scanner);
         }
         break;
     case '!':
         token_type = BANG;
         if (peak(scanner) == '=') {
+            lexeme = "!=";
             token_type = BANG_EQUALS;
             advance(scanner);
         }
@@ -114,6 +122,7 @@ void identify_token(Scanner *scanner, char *ch) {
     case '>':
         if (peak(scanner) == '=') {
             token_type = GREATER_EQUALS;
+            lexeme = ">=";
             advance(scanner);
             break;
         } else {
@@ -125,6 +134,7 @@ void identify_token(Scanner *scanner, char *ch) {
     case '<':
         if (peak(scanner) == '=') {
             token_type = LESS_EQUALS;
+            lexeme = "<=";
             advance(scanner);
             break;
         } else {
@@ -133,6 +143,14 @@ void identify_token(Scanner *scanner, char *ch) {
             scanner->has_error = 1;
             return;
         }
+    case '/':
+        if (peak(scanner) == '/') {
+            while (advance(scanner) != '\n') {}
+            return;
+        }
+
+        token_type = COMMENT;
+        break;
     case '\n':
         token_type = NEWLINE;
         scanner->line++;
@@ -147,7 +165,7 @@ void identify_token(Scanner *scanner, char *ch) {
         return;
     }
 
-    Token token = {token_type, ch, ch, scanner->line};
+    Token token = {token_type, lexeme, lexeme, scanner->line};
     scanner->tokens[NUM_TOKENS] = token;
     NUM_TOKENS++;
 }
