@@ -46,7 +46,7 @@ void scan(Scanner *scanner) {
     // TODO: Make sure to do null checks for all
     // mallocs, callocs, etc. if mem == NULL
 
-    for (; *column < length_of_src; (*column)++) {
+    for (; *column < length_of_src;) {
         char *ch = malloc(sizeof(char));
         *ch = scanner->source[*column];
         identify_token(scanner, ch);
@@ -64,6 +64,7 @@ char peak(Scanner *scanner) {
 }
 
 void identify_token(Scanner *scanner, char *ch) {
+    int is_comment = 0;
     TokenType token_type;
     // NOTE: When updating the switch case
     // update TokenName token_names[] as well.
@@ -72,6 +73,7 @@ void identify_token(Scanner *scanner, char *ch) {
     case ' ':
     case '\r':
     case '\t':
+        advance(scanner);
         return;
     case '(':
         token_type = LEFT_PAREN;
@@ -129,7 +131,6 @@ void identify_token(Scanner *scanner, char *ch) {
             printf("Unexpected token: '%s' at %i:%i. Did you mean '>='?\n", ch,
                    scanner->line, scanner->column + 1);
             scanner->has_error = 1;
-            return;
         }
     case '<':
         if (peak(scanner) == '=') {
@@ -141,15 +142,15 @@ void identify_token(Scanner *scanner, char *ch) {
             printf("Unexpected token: '%s' at %i:%i. Did you mean '<='?\n", ch,
                    scanner->line, scanner->column + 1);
             scanner->has_error = 1;
-            return;
         }
     case '/':
         if (peak(scanner) == '/') {
-            while (advance(scanner) != '\n') {}
-            return;
+            while (advance(scanner) != '\n') {
+            }
         }
 
         token_type = COMMENT;
+        is_comment = 1;
         break;
     case '\n':
         token_type = NEWLINE;
@@ -165,7 +166,13 @@ void identify_token(Scanner *scanner, char *ch) {
         return;
     }
 
-    Token token = {token_type, lexeme, lexeme, scanner->line};
-    scanner->tokens[NUM_TOKENS] = token;
+    if (!is_comment) {
+        advance(scanner);
+    }
+
+    if (!scanner->has_error) {
+        Token token = {token_type, lexeme, lexeme, scanner->line};
+        scanner->tokens[NUM_TOKENS] = token;
+    }
     NUM_TOKENS++;
 }
