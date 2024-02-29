@@ -63,6 +63,10 @@ void identify_token(Scanner *scanner, char *ch) {
     // NOTE: When updating the switch case
     // update TokenName token_names[] as well.
     switch (*ch) {
+    case ' ':
+    case '\r':
+    case '\t':
+        return;
     case '(':
         token_type = LEFT_PAREN;
         break;
@@ -94,42 +98,36 @@ void identify_token(Scanner *scanner, char *ch) {
         token_type = STAR;
         break;
     case '=':
-        switch (peak(scanner)) {
-        case '=':
+        token_type = EQUALS;
+        if (peak(scanner) == '=') {
             token_type = EQUALS_EQUALS;
             advance(scanner);
-            break;
-        default:
-            token_type = EQUALS;
         }
+        break;
     case '!':
-        switch (peak(scanner)) {
-        case '=':
+        token_type = BANG;
+        if (peak(scanner) == '=') {
             token_type = BANG_EQUALS;
             advance(scanner);
-            break;
-        default:
-            token_type = BANG;
         }
+        break;
     case '>':
-        switch (peak(scanner)) {
-        case '=':
-            token_type = BANG_EQUALS;
+        if (peak(scanner) == '=') {
+            token_type = GREATER_EQUALS;
             advance(scanner);
             break;
-        default:
+        } else {
             printf("Unexpected token: '%s' at %i:%i. Did you mean '>='?\n", ch,
                    scanner->line, scanner->column + 1);
             scanner->has_error = 1;
             return;
         }
     case '<':
-        switch (peak(scanner)) {
-        case '=':
+        if (peak(scanner) == '=') {
             token_type = LESS_EQUALS;
             advance(scanner);
             break;
-        default:
+        } else {
             printf("Unexpected token: '%s' at %i:%i. Did you mean '<='?\n", ch,
                    scanner->line, scanner->column + 1);
             scanner->has_error = 1;
