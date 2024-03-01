@@ -165,12 +165,6 @@ void identify_token(Scanner *scanner, char *ch) {
         printf("Unexpected token: '%s' at %i:%i.\n", ch, scanner->line,
                scanner->column + 1);
         scanner->has_error = 1;
-        return;
-    }
-
-    // Because the case for comment calls 'advance' on it's own.
-    if (!is_comment) {
-        advance(scanner);
     }
 
     if (!scanner->has_error) {
@@ -178,8 +172,11 @@ void identify_token(Scanner *scanner, char *ch) {
         scanner->tokens[NUM_TOKENS] = token;
     }
 
-    // A comment is still a line in the source file.
-    if (is_comment) {
+    // Because the case for comment calls 'advance' on it's own.
+    if (!is_comment) {
+        advance(scanner);
+    } else {
+        // A comment is still a line in the source file.
         scanner->line++;
     }
 
