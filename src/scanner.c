@@ -144,13 +144,15 @@ void identify_token(Scanner *scanner, char *ch) {
             scanner->has_error = 1;
         }
     case '/':
+        token_type = DIVIDE;
         if (peak(scanner) == '/') {
             while (advance(scanner) != '\n') {
             }
+
+            token_type = COMMENT;
+            is_comment = 1;
         }
 
-        token_type = COMMENT;
-        is_comment = 1;
         break;
     case '\n':
         token_type = NEWLINE;
@@ -166,6 +168,7 @@ void identify_token(Scanner *scanner, char *ch) {
         return;
     }
 
+    // Because the case for comment calls 'advance' on it's own.
     if (!is_comment) {
         advance(scanner);
     }
@@ -174,5 +177,11 @@ void identify_token(Scanner *scanner, char *ch) {
         Token token = {token_type, lexeme, lexeme, scanner->line};
         scanner->tokens[NUM_TOKENS] = token;
     }
+
+    // A comment is still a line in the source file.
+    if (is_comment) {
+        scanner->line++;
+    }
+
     NUM_TOKENS++;
 }
