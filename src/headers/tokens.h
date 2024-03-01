@@ -6,7 +6,6 @@ typedef enum TokenType {
     // Not done //
     //////////////
     NUMBER,
-    STRING,
 
     //////////
     // Done //
@@ -26,6 +25,7 @@ typedef enum TokenType {
     MODULUS,
     END_OF_FILE,
     COMMENT,
+    STRING,
 
     // Equality
     BANG,

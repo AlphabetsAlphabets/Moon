@@ -3,6 +3,7 @@
 
 TokenName token_names[] = {
     [STAR] = {"STAR"},
+    [STRING] = {"STRING"},
     [SEMICOLON] = {"SEMICOLON"},
     [PLUS] = {"PLUS"},
     [DIVIDE] = {"DIVIDE"},
@@ -153,6 +154,28 @@ void identify_token(Scanner *scanner, char *ch) {
             is_comment = 1;
         }
 
+        break;
+    case '"':
+        int length_of_src = strlen(scanner->source);
+        int str_len = 0;
+        int at_end = scanner->column >= length_of_src;
+
+        char next = peak(scanner);
+        int not_null = next != '\0' || next != '\000';
+        for (; next != '"' && not_null && !at_end; str_len++) {
+            lexeme[str_len] = next;
+            advance(scanner);
+            next = peak(scanner);
+        }
+
+        if (at_end || !not_null) {
+            printf("String at line %i was not properly terminated.\n", scanner->line);
+            scanner->has_error = 1;
+        }
+
+        token_type = STRING;
+        // Consume the closing "
+        advance(scanner);
         break;
     case '\n':
         token_type = NEWLINE;
