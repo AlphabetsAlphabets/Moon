@@ -1,3 +1,5 @@
+> The project has now moved to [codeberg](https://codeberg.org/AlphabetsAlphabets/Moon).
+
 # The Moon programming language
 ## Motivation
 I decided to make this for three reasons.
